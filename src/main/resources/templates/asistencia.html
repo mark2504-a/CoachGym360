@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head('Control de Asistencia')}"></head>
+<body class="bg-light">
+<nav th:replace="~{fragments :: navbar}"></nav>
+
+<div class="container">
+  <div th:if="${tipoAlerta == 'OK'}" class="alert alert-success fs-5 fw-bold text-center" th:text="${textoAlerta}"></div>
+  <div th:if="${tipoAlerta == 'DENIED'}" class="alert alert-danger fs-5 fw-bold text-center" th:text="${textoAlerta}"></div>
+  <div th:if="${tipoAlerta == 'ERROR'}" class="alert alert-warning fs-5 fw-bold text-center" th:text="${textoAlerta}"></div>
+
+  <div class="row g-4">
+    <div class="col-md-5">
+      <div class="card shadow-sm p-3 text-center">
+        <h5 class="fw-bold mb-3">Escanear QR o Ingresar Código</h5>
+        <div id="lectorQR" style="width: 100%;"></div>
+        <hr>
+        <form id="formAsistencia" method="post" action="/asistencia/marcar" class="d-flex gap-2">
+          <input type="text" id="inputCodigo" name="codigo" class="form-control text-uppercase"
+                 placeholder="Ej: CG-0001" required autofocus>
+          <button type="submit" class="btn btn-dark">Marcar</button>
+        </form>
+      </div>
+    </div>
+
+    <div class="col-md-7">
+      <div class="card shadow-sm p-3">
+        <h5 class="fw-bold mb-3">Registro de Entradas de Hoy</h5>
+        <table class="table table-hover">
+          <thead class="table-light">
+          <tr><th>Hora</th><th>Código</th><th>Cliente</th><th>Estado</th></tr>
+          </thead>
+          <tbody>
+          <tr th:each="a : ${asistenciasHoy}">
+            <td th:text="${a.hora}"></td>
+            <td class="fw-bold" th:text="${a.cliente.codigo}"></td>
+            <td th:text="${a.cliente.nombre}"></td>
+            <td>
+              <span th:if="${a.permitido}" class="badge bg-success">✅ Bienvenido</span>
+              <span th:unless="${a.permitido}" class="badge bg-danger">❌ Membresía vencida</span>
+            </td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+<script src="/js/html5-qrcode.min.js"></script>
+<script>
+  const html5QrcodeScanner = new Html5QrcodeScanner("lectorQR", { fps: 10, qrbox: 220 });
+  html5QrcodeScanner.render((decodedText) => {
+      document.getElementById('inputCodigo').value = decodedText;
+      html5QrcodeScanner.clear();
+      document.getElementById('formAsistencia').submit();
+  });
+</script>
+<div th:replace="~{fragments :: scripts}"></div>
+</body>
+</html>

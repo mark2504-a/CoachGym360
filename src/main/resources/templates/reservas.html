@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head('Reservas de Clases')}"></head>
+<body class="bg-light">
+<nav th:replace="~{fragments :: navbar}"></nav>
+
+<div class="container">
+  <div th:if="${tipoAlerta == 'OK'}" class="alert alert-success" th:text="${textoAlerta}"></div>
+  <div th:if="${tipoAlerta == 'ERROR'}" class="alert alert-danger" th:text="${textoAlerta}"></div>
+
+  <div class="row g-4">
+    <div class="col-md-4">
+      <div class="card shadow-sm p-3">
+        <h5 class="fw-bold mb-3">Nueva Reserva</h5>
+        <form method="post" action="/reservas/crear">
+          <div class="mb-2">
+            <label class="form-label">Cliente</label>
+            <select name="clienteId" class="form-select" required>
+              <option th:each="c : ${clientes}" th:value="${c.id}"
+                      th:text="${c.codigo} + ' - ' + ${c.nombre}"></option>
+            </select>
+          </div>
+          <div class="mb-2">
+            <label class="form-label">Clase</label>
+            <select name="claseId" class="form-select" required>
+              <option th:each="cl : ${clases}" th:value="${cl.id}"
+                      th:text="${cl.nombre} + ' (' + ${cl.diaSemana} + ' ' + ${cl.hora} + ')'"></option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Fecha de asistencia</label>
+            <input type="date" name="fecha" th:value="${hoy}" class="form-control" required>
+          </div>
+          <button type="submit" class="btn btn-primary w-100 fw-bold">Confirmar Reserva</button>
+        </form>
+      </div>
+    </div>
+
+    <div class="col-md-8">
+      <div class="card shadow-sm p-3 mb-4">
+        <h5 class="fw-bold mb-3">Horario Semanal de Clases</h5>
+        <table class="table table-sm">
+          <thead class="table-light">
+          <tr><th>Día</th><th>Hora</th><th>Clase</th><th>Instructor</th><th>Cupo Máx.</th></tr>
+          </thead>
+          <tbody>
+          <tr th:each="cl : ${clases}">
+            <td class="fw-bold" th:text="${cl.diaSemana}"></td>
+            <td th:text="${cl.hora}"></td>
+            <td th:text="${cl.nombre}"></td>
+            <td th:text="${cl.instructor}"></td>
+            <td th:text="${cl.cupo} + ' personas'"></td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="card shadow-sm p-3">
+        <h5 class="fw-bold mb-3">Próximas Reservas</h5>
+        <table class="table table-sm align-middle">
+          <thead class="table-light">
+          <tr><th>Fecha</th><th>Cliente</th><th>Clase</th><th>Estado</th><th></th></tr>
+          </thead>
+          <tbody>
+          <tr th:each="r : ${proximasReservas}">
+            <td th:text="${r.fecha}"></td>
+            <td th:text="${r.cliente.codigo} + ' - ' + ${r.cliente.nombre}"></td>
+            <td th:text="${r.clase.nombre} + ' (' + ${r.clase.hora} + ')'"></td>
+            <td>
+              <span th:if="${r.estado == 'CONFIRMADA'}" class="badge bg-success">CONFIRMADA</span>
+              <span th:if="${r.estado == 'CANCELADA'}" class="badge bg-secondary">CANCELADA</span>
+            </td>
+            <td>
+              <a th:if="${r.estado == 'CONFIRMADA'}" th:href="@{/reservas/cancelar/{id}(id=${r.id})}"
+                 class="btn btn-sm btn-outline-danger"
+                 onclick="return confirm('¿Cancelar esta reserva?')">Cancelar</a>
+            </td>
+          </tr>
+          <tr th:if="${#lists.isEmpty(proximasReservas)}">
+            <td colspan="5" class="text-center text-muted">No hay reservas próximas</td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+<div th:replace="~{fragments :: scripts}"></div>
+</body>
+</html>

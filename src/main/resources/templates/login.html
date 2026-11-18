@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head('Iniciar Sesión')}"></head>
+<body class="login-page">
+<div class="blob blob-1"></div>
+<div class="blob blob-2"></div>
+
+<div class="login-wrap">
+    <!-- Panel izquierdo: marca -->
+    <div class="login-hero">
+        <div class="cg-logo">CG</div>
+        <div>
+            <div class="numero">360</div>
+            <h1>COACH GYM</h1>
+            <p class="mt-2 mb-4">Clientes, pagos, asistencia con QR y reservas de clases en un solo lugar.</p>
+            <div class="login-chips">
+                <span>📷 Acceso QR</span>
+                <span>💳 Pagos</span>
+                <span>📅 Reservas</span>
+                <span>📊 Reportes</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Panel derecho: formulario -->
+    <div class="login-form">
+        <div class="login-kicker mb-2">Bienvenido</div>
+        <h2 class="mb-1">Inicia sesión</h2>
+        <p class="text-muted mb-4">Ingresa con tu usuario de Administración o Recepción.</p>
+
+        <div th:if="${error}" class="alert alert-danger py-2" th:text="${error}"></div>
+
+        <form method="post" action="/login">
+            <div class="mb-3">
+                <label class="form-label">Usuario</label>
+                <div class="input-icono">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
+                    </svg>
+                    <input type="text" name="username" class="form-control" placeholder="Ej. admin" required autofocus>
+                </div>
+            </div>
+            <div class="mb-4">
+                <label class="form-label">Contraseña</label>
+                <div class="input-icono">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                    </svg>
+                    <input type="password" name="password" class="form-control" placeholder="••••••••" required>
+                </div>
+            </div>
+            <button type="submit" class="btn btn-warning w-100 btn-login">Ingresar →</button>
+        </form>
+
+        <p class="text-muted small text-center mt-4 mb-0">Coach Gym 360 · Sistema de Gestión y Control de Acceso</p>
+    </div>
+</div>
+</body>
+</html>

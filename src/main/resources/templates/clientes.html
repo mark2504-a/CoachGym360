@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head('Clientes')}"></head>
+<body class="bg-light">
+<nav th:replace="~{fragments :: navbar}"></nav>
+
+<div class="container">
+    <div th:if="${mensaje}" class="alert alert-success" th:text="${mensaje}"></div>
+    <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+
+    <div class="row g-4">
+        <div class="col-md-4">
+            <div class="card shadow-sm p-3">
+                <h5 class="fw-bold mb-3"
+                    th:text="${clienteForm.id == null ? 'Nuevo Cliente' : 'Editar Cliente ' + clienteForm.codigo}">Nuevo Cliente</h5>
+                <form method="post" action="/clientes/guardar">
+                    <input type="hidden" name="id" th:value="${clienteForm.id}">
+                    <div class="mb-2">
+                        <label class="form-label">Nombre completo</label>
+                        <input type="text" name="nombre" th:value="${clienteForm.nombre}" class="form-control" required>
+                    </div>
+                    <div class="mb-2">
+                        <label class="form-label">Teléfono</label>
+                        <input type="text" name="telefono" th:value="${clienteForm.telefono}" class="form-control" placeholder="7000-0000">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Plan (se activa al registrar el pago)</label>
+                        <select name="planId" class="form-select">
+                            <option value="">-- Sin plan asignado --</option>
+                            <option th:each="p : ${planes}" th:value="${p.id}"
+                                    th:selected="${clienteForm.plan != null and clienteForm.plan.id == p.id}"
+                                    th:text="${p.nombre} + ' ($' + ${p.precio} + ')'"></option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-dark w-100"
+                            th:text="${clienteForm.id == null ? 'Guardar Cliente' : 'Guardar Cambios'}">Guardar Cliente</button>
+                    <a th:if="${clienteForm.id != null}" href="/clientes" class="btn btn-link w-100 mt-1">Cancelar edición</a>
+                </form>
+            </div>
+        </div>
+
+        <div class="col-md-8">
+            <div class="card shadow-sm p-3">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="fw-bold m-0">Listado de Clientes</h5>
+                    <form method="get" action="/clientes" class="d-flex gap-2">
+                        <input type="text" name="q" th:value="${q}" class="form-control form-control-sm" placeholder="Buscar nombre o CG-...">
+                        <button class="btn btn-outline-dark btn-sm">Buscar</button>
+                    </form>
+                </div>
+
+                <table class="table table-hover align-middle">
+                    <thead class="table-light">
+                    <tr><th>Código</th><th>Nombre</th><th>Plan</th><th>Vencimiento</th><th>Estado</th><th>QR</th><th>Acciones</th></tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="c : ${clientes}">
+                        <td class="fw-bold" th:text="${c.codigo}"></td>
+                        <td>
+                            <div th:text="${c.nombre}"></div>
+                            <small class="text-muted" th:text="${c.telefono}"></small>
+                        </td>
+                        <td th:text="${c.plan != null ? c.plan.nombre : 'Ninguno'}"></td>
+                        <td th:text="${c.fechaVencimiento != null ? c.fechaVencimiento : 'Sin pago'}"></td>
+                        <td>
+                            <span th:if="${c.estado == 'ACTIVO'}" class="badge bg-success">ACTIVO</span>
+                            <span th:if="${c.estado == 'POR_VENCER'}" class="badge bg-warning text-dark">POR VENCER</span>
+                            <span th:if="${c.estado == 'VENCIDO'}" class="badge bg-danger">VENCIDO</span>
+                        </td>
+                        <td>
+                            <button type="button" class="btn btn-sm btn-outline-primary"
+                                    th:data-codigo="${c.codigo}" th:data-nombre="${c.nombre}"
+                                    onclick="mostrarQR(this.getAttribute('data-codigo'), this.getAttribute('data-nombre'))">
+                                Ver QR
+                            </button>
+                        </td>
+                        <td class="text-nowrap">
+                            <a th:href="@{/clientes(editar=${c.id})}" class="btn btn-sm btn-outline-secondary">Editar</a>
+                            <a th:if="${session.rol == 'ADMIN'}" th:href="@{/clientes/eliminar/{id}(id=${c.id})}"
+                               class="btn btn-sm btn-outline-danger"
+                               onclick="return confirm('¿Eliminar cliente?')">Eliminar</a>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para mostrar el QR del cliente -->
+<div class="modal fade" id="modalQR" tabindex="-1">
+    <div class="modal-dialog modal-sm modal-dialog-centered">
+        <div class="modal-content text-center p-4">
+            <h5 class="fw-bold" id="qrNombre"></h5>
+            <p class="text-muted mb-2" id="qrCodigo"></p>
+            <div id="contenedorQR" class="d-flex justify-content-center my-3"></div>
+            <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cerrar</button>
+        </div>
+    </div>
+</div>
+
+<script src="/js/qrcode.min.js"></script>
+<script>
+    function mostrarQR(codigo, nombre) {
+        document.getElementById('qrNombre').innerText = nombre;
+        document.getElementById('qrCodigo').innerText = codigo;
+        const cont = document.getElementById('contenedorQR');
+        cont.innerHTML = '';
+        new QRCode(cont, { text: codigo, width: 180, height: 180 });
+        new bootstrap.Modal(document.getElementById('modalQR')).show();
+    }
+</script>
+<div th:replace="~{fragments :: scripts}"></div>
+</body>
+</html>

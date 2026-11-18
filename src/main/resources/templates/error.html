@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head('Error')}"></head>
+<body class="d-flex align-items-center justify-content-center">
+<div class="card p-5 text-center" style="max-width: 440px;">
+    <div class="display-1 fw-bold" style="color: var(--cg-amarillo); text-shadow: 0 0 30px rgba(255,193,7,.4);"
+         th:text="${status}">Error</div>
+    <h5 class="fw-bold justify-content-center"
+        th:text="${status == 404 ? 'Página no encontrada' : 'Algo salió mal'}">Algo salió mal</h5>
+    <p class="text-muted">No pudimos completar la operación. Regresa al inicio e inténtalo de nuevo.</p>
+    <a href="/" class="btn btn-warning">Volver al inicio</a>
+</div>
+</body>
+</html>

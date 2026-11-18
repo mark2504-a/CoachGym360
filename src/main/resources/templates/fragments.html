@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:fragment="head(titulo)">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="color-scheme" content="dark">
+    <title th:text="${titulo} + ' | Coach Gym 360'">Coach Gym</title>
+    <!-- Activa el modo oscuro de Bootstrap en todas las páginas -->
+    <script>document.documentElement.setAttribute('data-bs-theme', 'dark');</script>
+    <link href="/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/css/coachgym.css" rel="stylesheet">
+</head>
+<body>
+<nav th:fragment="navbar" class="navbar navbar-expand-lg navbar-dark cg-navbar mb-4">
+    <div class="container">
+        <a class="navbar-brand cg-brand" href="/">
+            <span class="cg-logo">CG</span>
+            <span>COACH GYM <small>360</small></span>
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#menuGym">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="menuGym">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0 gap-lg-1">
+                <li class="nav-item"><a class="nav-link" href="/">📊 Dashboard</a></li>
+                <li class="nav-item"><a class="nav-link" href="/clientes">👥 Clientes</a></li>
+                <li class="nav-item"><a class="nav-link" href="/pagos">💳 Pagos</a></li>
+                <li class="nav-item"><a class="nav-link" href="/asistencia">📷 Asistencia</a></li>
+                <li class="nav-item"><a class="nav-link" href="/reservas">📅 Reservas</a></li>
+                <!-- Solo visible para ADMIN -->
+                <li class="nav-item" th:if="${session.rol == 'ADMIN'}">
+                    <a class="nav-link cg-admin-link" href="/admin/panel">⚙️ Administración</a>
+                </li>
+            </ul>
+            <div class="d-flex align-items-center gap-2">
+                <div class="cg-user">
+                    <span class="cg-avatar"
+                          th:text="${session.usuarioLogueado != null ? #strings.substring(session.usuarioLogueado, 0, 1) : '?'}">A</span>
+                    <div class="lh-1">
+                        <div class="fw-semibold" th:text="${session.usuarioLogueado}">admin</div>
+                        <div class="cg-rol" th:text="${session.rol}">ADMIN</div>
+                    </div>
+                </div>
+                <a href="/logout" class="btn btn-outline-light btn-sm">Salir</a>
+            </div>
+        </div>
+    </div>
+    <script>
+        // Resalta en amarillo la opción del menú de la página actual
+        (function () {
+            var ruta = window.location.pathname;
+            document.querySelectorAll('#menuGym .nav-link').forEach(function (enlace) {
+                var href = enlace.getAttribute('href');
+                var activo = (href === '/') ? ruta === '/' : ruta.indexOf(href) === 0;
+                if (activo) enlace.classList.add('active');
+            });
+        })();
+    </script>
+</nav>
+<script th:fragment="scripts" src="/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

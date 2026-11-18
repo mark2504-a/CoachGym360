@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head('Pagos')}"></head>
+<body class="bg-light">
+<nav th:replace="~{fragments :: navbar}"></nav>
+
+<div class="container">
+    <div th:if="${mensaje}" class="alert alert-success" th:text="${mensaje}"></div>
+
+    <div class="row g-4">
+        <div class="col-md-4">
+            <div class="card shadow-sm p-3">
+                <h5 class="fw-bold mb-3">Registrar Pago</h5>
+                <form method="post" action="/pagos/registrar">
+                    <div class="mb-2">
+                        <label class="form-label">Cliente</label>
+                        <select name="clienteId" class="form-select" required>
+                            <option th:each="c : ${clientes}" th:value="${c.id}"
+                                    th:text="${c.codigo} + ' - ' + ${c.nombre}"></option>
+                        </select>
+                    </div>
+                    <div class="mb-2">
+                        <label class="form-label">Plan</label>
+                        <select name="planId" class="form-select" required>
+                            <option th:each="p : ${planes}" th:value="${p.id}"
+                                    th:text="${p.nombre} + ' ($' + ${p.precio} + ' / ' + ${p.duracionDias} + ' días)'"></option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Método de pago</label>
+                        <select name="metodo" class="form-select">
+                            <option value="Efectivo">Efectivo</option>
+                            <option value="Tarjeta">Tarjeta</option>
+                            <option value="Transferencia">Transferencia</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-success w-100 fw-bold">Cobrar y Renovar</button>
+                </form>
+            </div>
+        </div>
+
+        <div class="col-md-8">
+            <div class="card shadow-sm p-3">
+                <h5 class="fw-bold mb-3">Historial de Pagos</h5>
+                <table class="table table-hover">
+                    <thead class="table-light">
+                    <tr><th>Fecha</th><th>Cliente</th><th>Monto</th><th>Método</th><th>Período Cubierto</th></tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="p : ${pagos}">
+                        <td th:text="${p.fechaPago}"></td>
+                        <td th:text="${p.cliente.codigo} + ' - ' + ${p.cliente.nombre}"></td>
+                        <td class="fw-bold text-success" th:text="'$' + ${p.monto}"></td>
+                        <td th:text="${p.metodo}"></td>
+                        <td th:text="${p.periodoCubierto}"></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<div th:replace="~{fragments :: scripts}"></div>
+</body>
+</html>
