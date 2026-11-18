@@ -152,7 +152,7 @@ Hibernate crea las tablas automáticamente al iniciar el sistema.
 1. Abre XAMPP y enciende **Apache** y **MySQL**.
 2. Clona el repositorio:
    ```bash
-   git clone https://github.com/TU-USUARIO/coach-gym-360.git
+      git clone https://github.com/mark2504-a/CoachGym360.git
    ```
 3. Ábrelo en IntelliJ y espera a que Maven descargue las dependencias.
 4. Revisa el puerto de MySQL en `src/main/resources/application.properties` (`3306` por defecto en XAMPP; este proyecto viene con `3307`):
